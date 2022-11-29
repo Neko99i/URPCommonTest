@@ -1,0 +1,24 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+//自定义结构体
+struct data
+{
+    float r;
+    float g;
+    float b;
+};
+
+//从CPU到GPU
+StructuredBuffer<data> inputDatas;
+
+//从GPU到CPU
+RWStructuredBuffer<data> outputDatas;
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    outputDatas[id.x].r=inputDatas[id.x].r*2;
+    outputDatas[id.x].g=inputDatas[id.x].g*2;
+    outputDatas[id.x].b=inputDatas[id.x].b*2;
+}

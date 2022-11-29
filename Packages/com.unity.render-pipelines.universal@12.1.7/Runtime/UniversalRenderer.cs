@@ -1086,10 +1086,11 @@ namespace UnityEngine.Rendering.Universal
                     // binding MS surfaces is not supported by the GLES backend, and it won't be fixed after investigating
                     // the high performance impact of potential fixes, which would make it more expensive than depth prepass (fogbugz 1339401 for more info)
                     
-                    // if (IsGLESDevice())
-                    //     depthDescriptor.bindMS = false;
-                    // RenderTextureDescriptor
+                    if (IsGLESDevice())
+                        depthDescriptor.bindMS = false;
                     Debug.Log(depthDescriptor.bindMS);
+                    Debug.Log(SystemInfo.graphicsDeviceType);
+                    
                     depthDescriptor.colorFormat = RenderTextureFormat.Depth;
                     depthDescriptor.depthBufferBits = k_DepthStencilBufferBits;
                     cmd.GetTemporaryRT(m_ActiveCameraDepthAttachment.id, depthDescriptor, FilterMode.Point);

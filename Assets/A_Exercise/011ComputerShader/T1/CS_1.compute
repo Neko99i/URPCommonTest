@@ -1,0 +1,26 @@
+﻿#pragma kernel Gray
+
+RWTexture2D<float4> outputTex;
+
+Texture2D inputTex;
+SamplerState TrilinearRepeatSampler;
+SamplerState LinearRepeatSampler;
+SamplerState LinearClampSampler;
+SamplerState PointRepeatSampler;
+
+[numthreads(8,8,1)]
+void Gray (uint3 id : SV_DispatchThreadID)
+{
+    float r=inputTex[id.xy].r;    
+    float g=inputTex[id.xy].g;    
+    float b=inputTex[id.xy].b;   
+
+    float res=r*0.299+g*0.587+b*0.114; 
+    float3 texColor= inputTex[id.xy].rgb;
+
+    
+    float2 uv=id.xy/(512.0);
+    float3 texColor02= inputTex.SampleLevel(LinearClampSampler,uv,6);
+    float3 finalColor= pow(texColor02,0.45);
+    outputTex[id.xy] = float4(finalColor,1);
+}

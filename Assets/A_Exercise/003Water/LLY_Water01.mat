@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: LLY_Water01
+  m_Shader: {fileID: 4800000, guid: 4408caf5075c9854caac125b6633e091, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _mainTex:
+        m_Texture: {fileID: 2800000, guid: f8ea5aaeaf469d145bcca422a62e347b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _reflectTex:
+        m_Texture: {fileID: 8400000, guid: 43b0fd4695c1f09418e0055b28608aca, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _curWaveDis: 1.66
+    - _distanceFactor: 33.7
+    - _factorParam: 0
+    - _speedFactor: 1.4
+    - _totalFactor: -2.14
+    - _waveWidth: 3.94
+    m_Colors:
+    - _mainColor: {r: 1, g: 1, b: 1, a: 1}

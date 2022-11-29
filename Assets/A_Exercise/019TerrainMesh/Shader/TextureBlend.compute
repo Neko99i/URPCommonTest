@@ -1,0 +1,109 @@
+﻿//可以有多个Kernel
+
+//Function
+float2 ChangeUV(float2 uv,float4 tilingOffset)
+{
+    return uv*tilingOffset.xy + tilingOffset.zw;
+}
+
+
+float2 voronoihash47( float2 p )
+{
+	p = float2( dot( p, float2( 127.1, 311.7 ) ), dot( p, float2( 269.5, 183.3 ) ) );
+	return frac( sin( p ) *43758.5453);
+}
+float voronoi47( float2 v, float time, inout float2 id, inout float2 mr, float smoothness, inout float2 smoothId )
+{
+	float2 n = floor( v );
+	float2 f = frac( v );
+	float F1 = 8.0;
+	float F2 = 8.0; float2 mg = 0;
+	for ( int j = -1; j <= 1; j++ )
+	{
+		for ( int i = -1; i <= 1; i++ )
+		{
+			float2 g = float2( i, j );
+			float2 o = voronoihash47( n + g );
+			o = ( sin( time + o * 6.2831 ) * 0.5 + 0.5 );
+            float2 r = f - g - o;
+			float d = 0.5 * dot( r, r );
+			if( d<F1 )
+			{
+				F2 = F1;
+				F1 = d; mg = g; mr = r; id = o;
+			} else if( d<F2 )
+			{
+				F2 = d;
+			}
+		}
+	}
+	return F1;
+}
+//Kernel_1
+#pragma kernel TextureBlend
+
+RWTexture2D<float4> Result;
+
+Texture2D<float4> _Tex01;
+Texture2D<float4> _Tex02;
+Texture2D<float4> _Tex03;
+Texture2D<float4> _Tex04;
+Texture2D<float4> _Splatmap;
+
+SamplerState TrilinearRepeatSampler;
+SamplerState LinearRepeatSampler;
+SamplerState LinearClampSampler;
+SamplerState PointRepeatSampler;
+
+float4 tilingOffset;
+
+struct Resolution
+{
+    float width;
+    float height;
+};
+
+RWStructuredBuffer<Resolution> dataBuffer;
+
+float _VoroScale;
+float _NoiseScale;
+float _RotateScale;
+
+
+
+[numthreads(8,8,1)]
+void TextureBlend (uint3 id : SV_DispatchThreadID)
+{
+    float width=dataBuffer[0].width-1;
+    float height=dataBuffer[0].height-1;
+
+    float2 uv= float2(id.x/width,id.y/height);
+    float4 mask= _Splatmap.SampleLevel(LinearClampSampler,uv,0);
+   
+    //BlendTexture
+    uv = ChangeUV(uv,tilingOffset);
+
+    float time47 = 0.0;
+	float2 voronoiSmoothId47 = 0;
+	float2 id47 = 0;
+	float2 uv47 = 0;
+    float2 coords47 = uv * 10;
+	float voroi47 = voronoi47( coords47, time47, id47, uv47, 0.0, voronoiSmoothId47 );
+
+	float dotResult4_g3 = dot( floor( ( uv + ( voroi47 * _NoiseScale ) ) ) , float2( 12.9898,78.233 ) );
+	float randomVal = lerp( -360.0 , 360.0 , frac( ( sin( dotResult4_g3 ) * 43758.55 ) ));
+    randomVal *=_RotateScale;
+	float cos53 = cos( randomVal );
+	float sin53 = sin( randomVal );
+	float2 uv2 = mul( uv - float2( 0.5,0.5 ) , float2x2( cos53 , -sin53 , sin53 , cos53 )) + float2( 0.5,0.5 );
+
+    float3 mainTexColor = _Tex01.SampleLevel(TrilinearRepeatSampler,uv,0).xyz * mask.x;
+    mainTexColor += _Tex02.SampleLevel(LinearRepeatSampler,uv,0).xyz * mask.y;
+    mainTexColor += _Tex03.SampleLevel(LinearRepeatSampler,uv,0).xyz * mask.z;
+    // mainTexColor += _Tex04.SampleLevel(LinearRepeatSampler,uv,0) * mask.w;
+	mainTexColor=pow(mainTexColor,0.45);
+
+    float4 finalColor=float4(mainTexColor,1);   
+
+    Result[id.xy]=finalColor;
+}
