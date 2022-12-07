@@ -1,112 +1,123 @@
 Shader "Hidden/Universal Render Pipeline/FinalPost"
 {
     HLSLINCLUDE
-        #pragma exclude_renderers gles
-        #pragma multi_compile_local_fragment _ _POINT_SAMPLING _RCAS
-        #pragma multi_compile_local_fragment _ _FXAA
-        #pragma multi_compile_local_fragment _ _FILM_GRAIN
-        #pragma multi_compile_local_fragment _ _DITHERING
-        #pragma multi_compile_local_fragment _ _LINEAR_TO_SRGB_CONVERSION
-        #pragma multi_compile _ _USE_DRAW_PROCEDURAL
-        #pragma multi_compile_fragment _ DEBUG_DISPLAY
+    #pragma exclude_renderers gles
+    #pragma multi_compile_local_fragment _ _POINT_SAMPLING _RCAS
+    #pragma multi_compile_local_fragment _ _FXAA
+    #pragma multi_compile_local_fragment _ _FILM_GRAIN
+    #pragma multi_compile_local_fragment _ _DITHERING
+    #pragma multi_compile_local_fragment _ _LINEAR_TO_SRGB_CONVERSION
+    #pragma multi_compile _ _USE_DRAW_PROCEDURAL
+    #pragma multi_compile_fragment _ DEBUG_DISPLAY
 
-        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
-        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
-        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Debug/DebuggingFullscreen.hlsl"
-        #include "Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/Common.hlsl"
+    #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+    #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Debug/DebuggingFullscreen.hlsl"
+    #include "Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/Common.hlsl"
 
-        TEXTURE2D_X(_SourceTex);
+    TEXTURE2D_X(_SourceTex);
 
-        TEXTURE2D(_Grain_Texture);
-        TEXTURE2D(_BlueNoise_Texture);
+    TEXTURE2D(_Grain_Texture);
+    TEXTURE2D(_BlueNoise_Texture);
 
-        float4 _SourceSize;
-        float2 _Grain_Params;
-        float4 _Grain_TilingParams;
-        float4 _Dithering_Params;
+    TEXTURE2D(_CameraDepthTexture);
+    SAMPLER(sampler_CameraDepthTexture);
 
-        #if SHADER_TARGET >= 45
+    float4 _SourceSize;
+    float2 _Grain_Params;
+    float4 _Grain_TilingParams;
+    float4 _Dithering_Params;
+
+    #if SHADER_TARGET >= 45
             #define FSR_INPUT_TEXTURE _SourceTex
             #define FSR_INPUT_SAMPLER sampler_LinearClamp
 
             #include "Packages/com.unity.render-pipelines.core/Runtime/PostProcessing/Shaders/FSRCommon.hlsl"
-        #endif
+    #endif
 
-        #define GrainIntensity          _Grain_Params.x
-        #define GrainResponse           _Grain_Params.y
-        #define GrainScale              _Grain_TilingParams.xy
-        #define GrainOffset             _Grain_TilingParams.zw
+    #define GrainIntensity          _Grain_Params.x
+    #define GrainResponse           _Grain_Params.y
+    #define GrainScale              _Grain_TilingParams.xy
+    #define GrainOffset             _Grain_TilingParams.zw
 
-        #define DitheringScale          _Dithering_Params.xy
-        #define DitheringOffset         _Dithering_Params.zw
+    #define DitheringScale          _Dithering_Params.xy
+    #define DitheringOffset         _Dithering_Params.zw
 
-        half4 Frag(Varyings input) : SV_Target
-        {
-            UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+    half4 Frag(Varyings input) : SV_Target
+    {
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-            float2 uv = UnityStereoTransformScreenSpaceTex(input.uv);
-            float2 positionNDC = uv;
-            int2   positionSS  = uv * _SourceSize.xy;
+        float2 uv = UnityStereoTransformScreenSpaceTex(input.uv);
+        float2 positionNDC = uv;
+        int2 positionSS = uv * _SourceSize.xy;
 
-            #if _POINT_SAMPLING
+        #if _POINT_SAMPLING
             half3 color = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_PointClamp, uv).xyz;
-            #elif _RCAS && SHADER_TARGET >= 45
+        #elif _RCAS && SHADER_TARGET >= 45
             half3 color = ApplyRCAS(positionSS);
             // When Unity is configured to use gamma color encoding, we must convert back from linear after RCAS is performed.
             // (The input color data for this shader variant is always linearly encoded because RCAS requires it)
-            #if UNITY_COLORSPACE_GAMMA
+        #if UNITY_COLORSPACE_GAMMA
             color = GetLinearToSRGB(color);
-            #endif
-            #else
-            half3 color = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_LinearClamp, uv).xyz;
-            #endif
+        #endif
+        #else
+        half3 color = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_LinearClamp, uv).xyz;
+        #endif
 
-            #if _FXAA
+        #if _FXAA
             {
                 color = ApplyFXAA(color, positionNDC, positionSS, _SourceSize, _SourceTex);
             }
-            #endif
+        #endif
 
-            #if _FILM_GRAIN
+        #if _FILM_GRAIN
             {
                 color = ApplyGrain(color, positionNDC, TEXTURE2D_ARGS(_Grain_Texture, sampler_LinearRepeat), GrainIntensity, GrainResponse, GrainScale, GrainOffset);
             }
-            #endif
+        #endif
 
-            #if _LINEAR_TO_SRGB_CONVERSION
+        #if _LINEAR_TO_SRGB_CONVERSION
             {
                 color = LinearToSRGB(color);
             }
-            #endif
+        #endif
 
-            #if _DITHERING
+        #if _DITHERING
             {
                 color = ApplyDithering(color, positionNDC, TEXTURE2D_ARGS(_BlueNoise_Texture, sampler_PointRepeat), DitheringScale, DitheringOffset);
             }
-            #endif
+        #endif
 
-            half4 finalColor = half4(color, 1);
+        half4 finalColor = half4(color, 1);
 
-            #if defined(DEBUG_DISPLAY)
+        #if defined(DEBUG_DISPLAY)
             half4 debugColor = 0;
 
             if(CanDebugOverrideOutputColor(finalColor, uv, debugColor))
             {
                 return debugColor;
             }
-            #endif
+        #endif
 
-            return finalColor;
-        }
+        return finalColor;
 
+        // //test depthTex
+        // float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv).r;
+        // float depth01 = Linear01Depth(
+        //     SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv), _ZBufferParams).x;
+        // return depth;
+    }
     ENDHLSL
 
     /// Standard FinalPost shader variant with support for FSR
     /// Note: FSR requires shader target 4.5 because it relies on texture gather instructions
     SubShader
     {
-        Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline"}
+        Tags
+        {
+            "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline"
+        }
         LOD 100
         ZTest Always ZWrite Off Cull Off
 
@@ -115,9 +126,9 @@ Shader "Hidden/Universal Render Pipeline/FinalPost"
             Name "FinalPost"
 
             HLSLPROGRAM
-                #pragma vertex FullscreenVert
-                #pragma fragment Frag
-                #pragma target 4.5
+            #pragma vertex FullscreenVert
+            #pragma fragment Frag
+            #pragma target 4.5
             ENDHLSL
         }
     }
@@ -125,7 +136,10 @@ Shader "Hidden/Universal Render Pipeline/FinalPost"
     /// Fallback version of FinalPost shader which lacks support for FSR
     SubShader
     {
-        Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline"}
+        Tags
+        {
+            "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline"
+        }
         LOD 100
         ZTest Always ZWrite Off Cull Off
 
@@ -134,8 +148,8 @@ Shader "Hidden/Universal Render Pipeline/FinalPost"
             Name "FinalPost"
 
             HLSLPROGRAM
-                #pragma vertex FullscreenVert
-                #pragma fragment Frag
+            #pragma vertex FullscreenVert
+            #pragma fragment Frag
             ENDHLSL
         }
     }

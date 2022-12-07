@@ -248,7 +248,6 @@ namespace UnityEngine.Rendering.Universal.Internal
             m_FilmGrain = stack.GetComponent<FilmGrain>();
             m_UseDrawProcedural = renderingData.cameraData.xr.enabled;
             m_UseFastSRGBLinearConversion = renderingData.postProcessingData.useFastSRGBLinearConversion;
-
             if (m_IsFinalPass)
             {
                 var cmd = CommandBufferPool.Get();
@@ -449,8 +448,8 @@ namespace UnityEngine.Rendering.Universal.Internal
                 using (new ProfilingScope(cmd, ProfilingSampler.Get(markerName)))
                 {
                     DoDepthOfField(cameraData.camera, cmd, GetSource(), GetDestination(), cameraData.pixelRect);
-                    Swap(ref renderer);
-                }
+                    
+                }Swap(ref renderer);
             }
 
             // Motion blur
@@ -1389,7 +1388,6 @@ namespace UnityEngine.Rendering.Universal.Internal
             material.shaderKeywords = null;
 
             PostProcessUtils.SetSourceSize(cmd, cameraData.cameraTargetDescriptor);
-
             SetupGrain(cameraData, material);
             SetupDithering(cameraData, material);
 

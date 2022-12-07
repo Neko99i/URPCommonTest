@@ -80,6 +80,11 @@ namespace UnityEngine.Rendering.Universal.Internal
 
                 CameraData cameraData = renderingData.cameraData;
 
+                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2 || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3)
+                {
+                    cameraSamples = 1;
+                }
+                
                 switch (cameraSamples)
                 {
                     case 8:
@@ -108,9 +113,10 @@ namespace UnityEngine.Rendering.Universal.Internal
                         break;
                 }
 
+                
                 cmd.SetGlobalTexture("_CameraDepthAttachment", source.Identifier());
 
-
+                
 #if ENABLE_VR && ENABLE_XR_MODULE
                 // XR uses procedural draw instead of cmd.blit or cmd.DrawFullScreenMesh
                 if (renderingData.cameraData.xr.enabled)

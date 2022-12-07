@@ -35,6 +35,13 @@ Shader "Hidden/Universal Render Pipeline/UberPost"
         TEXTURE2D(_UserLut);
         TEXTURE2D(_BlueNoise_Texture);
 
+
+        TEXTURE2D(_CameraDepthTexture);
+        SAMPLER(sampler_CameraDepthTexture);
+
+        TEXTURE2D(_CameraDepthAttachment);
+        SAMPLER(sampler_CameraDepthAttachment);
+    
         float4 _Lut_Params;
         float4 _UserLut_Params;
         float4 _Bloom_Params;
@@ -236,6 +243,11 @@ Shader "Hidden/Universal Render Pipeline/UberPost"
             #endif
 
             return half4(color, 1.0);
+
+            //test depthTex
+            // float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, uv).r;
+            // float depth01 = Linear01Depth(depth, _ZBufferParams).x;
+            // return depth;
         }
 
     ENDHLSL

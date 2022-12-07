@@ -381,6 +381,8 @@ namespace UnityEngine.Rendering.Universal
         /// <inheritdoc />
         public override void Setup(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+
+
             m_ForwardLights.ProcessLights(ref renderingData);
 
             ref CameraData cameraData = ref renderingData.cameraData;
@@ -391,7 +393,11 @@ namespace UnityEngine.Rendering.Universal
 
             if (cameraData.cameraType != CameraType.Game)
                 useRenderPassEnabled = false;
-
+            
+            //只针对游戏Camera输出当前的图形API类型
+            // if (cameraData.cameraType == CameraType.Game)
+            //     Debug.Log(SystemInfo.graphicsDeviceType);
+            
             // Special path for depth only offscreen cameras. Only write opaques + transparents.
             bool isOffscreenDepthTexture = cameraData.targetTexture != null && cameraData.targetTexture.format == RenderTextureFormat.Depth;
             if (isOffscreenDepthTexture)
@@ -680,6 +686,7 @@ namespace UnityEngine.Rendering.Universal
             if (useDepthPriming && (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Vulkan || cameraTargetDescriptor.msaaSamples == 1))
             {
                 m_PrimedDepthCopyPass.Setup(m_ActiveCameraDepthAttachment, m_DepthTexture);
+                
                 m_PrimedDepthCopyPass.AllocateRT = false;
 
                 EnqueuePass(m_PrimedDepthCopyPass);
@@ -734,7 +741,7 @@ namespace UnityEngine.Rendering.Universal
             }
 
             // If a depth texture was created we necessarily need to copy it, otherwise we could have render it to a renderbuffer.
-            if (requiresDepthCopyPass)
+            if (requiresDepthCopyPass )
             {
                 m_CopyDepthPass.Setup(m_ActiveCameraDepthAttachment, m_DepthTexture);
 
@@ -866,7 +873,7 @@ namespace UnityEngine.Rendering.Universal
                         EnqueuePass(m_XRCopyDepthPass);
                     }
                 }
-#endif
+#endif  
             }
             // stay in RT so we resume rendering on stack after post-processing
             else if (applyPostProcessing)
@@ -1086,10 +1093,10 @@ namespace UnityEngine.Rendering.Universal
                     // binding MS surfaces is not supported by the GLES backend, and it won't be fixed after investigating
                     // the high performance impact of potential fixes, which would make it more expensive than depth prepass (fogbugz 1339401 for more info)
                     
+                    //当为MSAA时 在OpenGLEs3.0及以下的机器上取消了绑定为多采样贴图，在渲染中渲染不上去
                     if (IsGLESDevice())
                         depthDescriptor.bindMS = false;
-                    Debug.Log(depthDescriptor.bindMS);
-                    Debug.Log(SystemInfo.graphicsDeviceType);
+                    // Debug.Log(depthDescriptor.bindMS);
                     
                     depthDescriptor.colorFormat = RenderTextureFormat.Depth;
                     depthDescriptor.depthBufferBits = k_DepthStencilBufferBits;

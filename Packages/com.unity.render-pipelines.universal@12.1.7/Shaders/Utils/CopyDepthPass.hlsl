@@ -93,15 +93,17 @@ Varyings vert(Attributes input)
 
 float SampleDepth(float2 uv)
 {
+    
 #if MSAA_SAMPLES == 1
     return SAMPLE(uv);
 #else
     int2 coord = int2(uv * _CameraDepthAttachment_TexelSize.zw);
     float outDepth = DEPTH_DEFAULT_VALUE;
-
+    
     UNITY_UNROLL
     for (int i = 0; i < MSAA_SAMPLES; ++i)
         outDepth = DEPTH_OP(LOAD(coord, i), outDepth);
+    
     return outDepth;
 #endif
 }
