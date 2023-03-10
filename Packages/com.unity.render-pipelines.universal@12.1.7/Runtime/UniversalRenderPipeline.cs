@@ -541,6 +541,7 @@ namespace UnityEngine.Rendering.Universal
             {
                 BeginCameraRendering(context, baseCamera);
             }
+            
             // Update volumeframework before initializing additional camera data
             UpdateVolumeFramework(baseCamera, baseCameraAdditionalData);
             InitializeCameraData(baseCamera, baseCameraAdditionalData, !isStackedRendering, out var baseCameraData);
@@ -595,11 +596,9 @@ namespace UnityEngine.Rendering.Universal
                     {
                         // Copy base settings from base camera data and initialize initialize remaining specific settings for this camera type.
                         CameraData overlayCameraData = baseCameraData;
-                        overlayCameraData.renderScale=1;
+                        // overlayCameraData.renderScale=1;
                         bool lastCamera = i == lastActiveOverlayCameraIndex;
 
-                                                
-                      
 #if ENABLE_VR && ENABLE_XR_MODULE
                         UpdateCameraStereoMatrices(currCameraData.camera, xrPass);
 #endif
@@ -615,10 +614,9 @@ namespace UnityEngine.Rendering.Universal
                         UpdateVolumeFramework(currCamera, currCameraData);
 
                         InitializeAdditionalCameraData(currCamera, currCameraData, lastCamera, ref overlayCameraData);
-                        Debug.Log(overlayCameraData.renderScale);
                         
-                        overlayCameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(overlayCameraData.camera, overlayCameraData.renderScale,
-                            overlayCameraData.isHdrEnabled, 1, false, overlayCameraData.requiresOpaqueTexture);
+                        // overlayCameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(overlayCameraData.camera, overlayCameraData.renderScale,
+                        //     overlayCameraData.isHdrEnabled, 1, false, overlayCameraData.requiresOpaqueTexture);
                         
 #if ENABLE_VR && ENABLE_XR_MODULE
                         if (baseCameraData.xr.enabled)
@@ -1325,9 +1323,10 @@ namespace UnityEngine.Rendering.Universal
                     // The user selected "auto" for their upscaling filter so we should attempt to choose the best filter
                     // for the current situation. When the current resolution and render scale are compatible with integer
                     // scaling we use the point sampling filter. Otherwise we just use the default filter (linear).
-                    float pixelScale = (1.0f / renderScale);
+                    // float pixelScale = (1.0f / renderScale);
+                    float pixelScale = (1.0f / 0.001f);
                     bool isIntegerScale = Mathf.Approximately((pixelScale - Mathf.Floor(pixelScale)), 0.0f);
-
+                    
                     if (isIntegerScale)
                     {
                         float widthScale = (imageSize.x / pixelScale);
@@ -1340,8 +1339,9 @@ namespace UnityEngine.Rendering.Universal
                         {
                             filter = ImageUpscalingFilter.Point;
                         }
+                        
                     }
-
+                    filter = ImageUpscalingFilter.Point;
                     break;
                 }
 

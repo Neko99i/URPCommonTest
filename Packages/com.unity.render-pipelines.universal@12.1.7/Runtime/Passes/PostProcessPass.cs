@@ -248,6 +248,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             m_FilmGrain = stack.GetComponent<FilmGrain>();
             m_UseDrawProcedural = renderingData.cameraData.xr.enabled;
             m_UseFastSRGBLinearConversion = renderingData.postProcessingData.useFastSRGBLinearConversion;
+            
             if (m_IsFinalPass)
             {
                 var cmd = CommandBufferPool.Get();
@@ -557,6 +558,11 @@ namespace UnityEngine.Rendering.Universal.Internal
 
                 RenderTargetIdentifier targetDestination = m_UseSwapBuffer ? destination : m_Destination.id;
 
+                // if (cameraData.cameraType==CameraType.Game)
+                // {
+                //     Debug.Log("Main");
+                // }
+                
                 // Note: We rendering to "camera target" we need to get the cameraData.targetTexture as this will get the targetTexture of the camera stack.
                 // Overlay cameras need to output to the target described in the base camera while doing camera stack.
                 RenderTargetHandle cameraTargetHandle = RenderTargetHandle.GetCameraTarget(cameraData.xr);
@@ -565,6 +571,8 @@ namespace UnityEngine.Rendering.Universal.Internal
                 // With camera stacking we not always resolve post to final screen as we might run post-processing in the middle of the stack.
                 if (m_UseSwapBuffer)
                 {
+                    //通过判断这里需不需要绘制到屏幕来让改变CameraTarget
+                    // m_ResolveToScreen = true;
                     cameraTarget = (m_ResolveToScreen) ? cameraTarget : targetDestination;
                 }
                 else
@@ -612,8 +620,10 @@ namespace UnityEngine.Rendering.Universal.Internal
                     cameraData.renderer.ConfigureCameraTarget(cameraTarget, cameraTarget);
                     cmd.SetViewProjectionMatrices(Matrix4x4.identity, Matrix4x4.identity);
 
-                    if ((m_Destination == RenderTargetHandle.CameraTarget && !m_UseSwapBuffer) || (m_ResolveToScreen && m_UseSwapBuffer))
+                    if ((m_Destination == RenderTargetHandle.CameraTarget && !m_UseSwapBuffer) ||
+                        (m_ResolveToScreen && m_UseSwapBuffer))
                         cmd.SetViewport(cameraData.pixelRect);
+
 
                     cmd.DrawMesh(RenderingUtils.fullscreenMesh, Matrix4x4.identity, m_Materials.uber);
 
@@ -1459,6 +1469,7 @@ namespace UnityEngine.Rendering.Universal.Internal
 
                 switch (cameraData.imageScalingMode)
                 {
+                    
                     case ImageScalingMode.Upscaling:
                     {
                         // In the upscaling case, set material keywords based on the selected upscaling filter

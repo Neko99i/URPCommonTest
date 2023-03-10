@@ -748,6 +748,8 @@ namespace UnityEngine.Rendering.Universal
                 if (this.actualRenderingMode == RenderingMode.Deferred && !useRenderPassEnabled)
                     m_CopyDepthPass.AllocateRT = false; // m_DepthTexture is already allocated by m_GBufferCopyDepthPass but it's not called when using RenderPass API.
 
+                RenderBufferStoreAction opaquePassColorStoreAction = RenderBufferStoreAction.Store;
+                RenderBufferStoreAction opaquePassDepthStoreAction = RenderBufferStoreAction.Store;
                 EnqueuePass(m_CopyDepthPass);
             }
 
@@ -785,7 +787,6 @@ namespace UnityEngine.Rendering.Universal
                 {
                     EnqueuePass(m_TransparentSettingsPass);
                 }
-
                 // if this is not lastCameraInTheStack we still need to Store, since the MSAA buffer might be needed by the Overlay cameras
                 RenderBufferStoreAction transparentPassColorStoreAction = cameraTargetDescriptor.msaaSamples > 1 && lastCameraInTheStack ? RenderBufferStoreAction.Resolve : RenderBufferStoreAction.Store;
                 RenderBufferStoreAction transparentPassDepthStoreAction = RenderBufferStoreAction.DontCare;
