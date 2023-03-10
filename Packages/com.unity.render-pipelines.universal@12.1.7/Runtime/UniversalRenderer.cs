@@ -634,7 +634,15 @@ namespace UnityEngine.Rendering.Universal
 
             bool hasPassesAfterPostProcessing = activeRenderPassQueue.Find(x => x.renderPassEvent == RenderPassEvent.AfterRendering) != null;
 
-            if (mainLightShadows)
+            bool isActiveCustomShadow = false;
+            ScriptableRendererFeature CustomShadowRendererFeature = UniversalRenderPipeline.asset.FindRenderFeature("CustomShadowFeature");
+            
+            if (CustomShadowRendererFeature != null)
+            {
+                isActiveCustomShadow = CustomShadowRendererFeature.isActive;
+            }
+            
+            if (mainLightShadows && !isActiveCustomShadow)
                 EnqueuePass(m_MainLightShadowCasterPass);
 
             if (additionalLightShadows)

@@ -1,4 +1,4 @@
-﻿Shader "CustomEffect/CustomShadow"
+﻿Shader "LLY/Shadow/CustomShadow"
 {
     Properties
     {
