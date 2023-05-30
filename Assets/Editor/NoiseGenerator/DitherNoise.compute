@@ -1,0 +1,121 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+#pragma kernel standard 
+#pragma kernel turbulence 
+#pragma kernel ridge 
+
+#define PI 3.1415926
+
+RWStructuredBuffer<float> Result;
+float TextureSize;
+float NoiseScale;
+
+
+int _Octaves;
+float _Lacunarity;
+float _Gain;
+float _Amplitude;
+float _Frequency;
+
+float mix(float a, float b, float t) {
+    return b*t + a*(1 - t);
+}
+
+float4 random4(float4 p){
+    p = float4(dot(p, float4(127.1, 311.7, 74.7,35.7)),
+        dot(p, float4(269.5, 183.3, 246.1,67.2)),
+        dot(p, float4(113.5, 271.9, 124.6,157.1)),
+        dot(p, float4(173.5, 235.9, 351.6,335.4)));
+    return -1.0 + 2.0 * frac(sin(p)*43.5453123);
+}
+
+float DihterAlphaClipValue(float2 screenPos)
+{
+    screenPos  *= TextureSize; 
+    float DITHER_THRESHOLDS[16] =
+    {
+        1.0 / 17.0,  9.0 / 17.0,  3.0 / 17.0, 11.0 / 17.0,
+        13.0 / 17.0,  5.0 / 17.0, 15.0 / 17.0,  7.0 / 17.0,
+        4.0 / 17.0, 12.0 / 17.0,  2.0 / 17.0, 10.0 / 17.0,
+        16.0 / 17.0,  8.0 / 17.0, 14.0 / 17.0,  6.0 / 17.0
+    };
+    uint index = (uint(screenPos.x) % 4) * 4 + uint(screenPos.y) % 4;
+    return  1 - DITHER_THRESHOLDS[index];
+}
+
+
+float SeamlessNoise(float2 uv, float2 scale) {
+    //xy->uv  dxdy->scale  xyoffset->Random seed
+    uv /= scale;
+    return DihterAlphaClipValue(uv);
+}
+
+float fbm(float2 uv,float scale) {
+    /*如果要多次使用，要把_Frequency和_Amplitude赋值给新的，不能直接用，因为这两个是全局的*/
+    float v;
+    for (int i = 0; i < _Octaves; i++) {
+        v += _Amplitude*(SeamlessNoise(_Frequency*uv,scale)+1)*0.5;
+        _Frequency *= _Lacunarity;
+        _Amplitude *= _Gain;
+    }
+    return v;
+}
+float fbmTurbulence(float2 uv,float scale) {
+    float v;
+    for (int i = 0; i < _Octaves; i++) {
+        v += _Amplitude*abs(SeamlessNoise(_Frequency*uv,scale));
+        _Frequency *= _Lacunarity;
+        _Amplitude *= _Gain;
+    }
+    return v;
+}
+float fbmRidge(float2 uv,float scale) {
+    float v;
+    float pre=1;
+    for (int i = 0; i < _Octaves; i++) {
+        float h = abs(SeamlessNoise(_Frequency*uv,scale));
+        h = 0.9 - h;
+        h = h * h; 
+        v +=h*_Amplitude;
+        //v +=h*pre*_Amplitude;
+        pre=h;
+        _Frequency *= _Lacunarity;
+        _Amplitude *= _Gain;
+    }
+    return v;
+}
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    int index=id.x+TextureSize*id.y;
+    uint period=(int)NoiseScale;
+    float2 uv=(id.xy/TextureSize);
+    //使用采样随机值的循环实现 缩放只能是整型
+    //Result[index]=(perlinNoise(uv,period)+1)*0.5;
+    //使用高纬采样实现
+    Result[index]=(SeamlessNoise(uv,NoiseScale)+1)*0.5;
+}
+
+[numthreads(8,8,1)]
+void standard (uint3 id : SV_DispatchThreadID)
+{
+    int index=id.x+TextureSize*id.y;
+    float2 uv=(id.xy/TextureSize);
+    Result[index] = fbm(uv,NoiseScale);
+}
+
+[numthreads(8,8,1)]
+void turbulence (uint3 id : SV_DispatchThreadID)
+{
+    int index=id.x+TextureSize*id.y;
+    float2 uv=(id.xy/TextureSize);
+    Result[index] = fbmTurbulence(uv,NoiseScale);
+}
+
+[numthreads(8,8,1)]
+void ridge (uint3 id : SV_DispatchThreadID)
+{
+    int index=id.x+TextureSize*id.y;
+    float2 uv=(id.xy/TextureSize);
+    Result[index] = fbmRidge(uv,NoiseScale);
+}

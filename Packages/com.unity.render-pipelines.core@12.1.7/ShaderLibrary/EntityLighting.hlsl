@@ -12,23 +12,23 @@
 #define LIGHTMAP_RGBM_MAX_LINEAR    real(34.493242) // LIGHTMAP_RGBM_MAX_GAMMA ^ 2.2
 
 #ifdef UNITY_LIGHTMAP_RGBM_ENCODING
-#ifdef UNITY_COLORSPACE_GAMMA
+    #ifdef UNITY_COLORSPACE_GAMMA
         #define LIGHTMAP_HDR_MULTIPLIER LIGHTMAP_RGBM_MAX_GAMMA
         #define LIGHTMAP_HDR_EXPONENT   real(1.0)   // Not used in gamma color space
-#else
+    #else
         #define LIGHTMAP_HDR_MULTIPLIER LIGHTMAP_RGBM_MAX_LINEAR
         #define LIGHTMAP_HDR_EXPONENT   real(2.2)
-#endif
+    #endif
 #elif defined(UNITY_LIGHTMAP_DLDR_ENCODING)
-#ifdef UNITY_COLORSPACE_GAMMA
+    #ifdef UNITY_COLORSPACE_GAMMA
         #define LIGHTMAP_HDR_MULTIPLIER real(2.0)
-#else
+    #else
         #define LIGHTMAP_HDR_MULTIPLIER real(4.59) // 2.0 ^ 2.2
-#endif
+    #endif
     #define LIGHTMAP_HDR_EXPONENT real(0.0)
 #else // (UNITY_LIGHTMAP_FULL_HDR)
-#define LIGHTMAP_HDR_MULTIPLIER real(1.0)
-#define LIGHTMAP_HDR_EXPONENT real(1.0)
+    #define LIGHTMAP_HDR_MULTIPLIER real(1.0)
+    #define LIGHTMAP_HDR_EXPONENT real(1.0)
 #endif
 
 // TODO: Check if PI is correctly handled!
@@ -114,9 +114,9 @@ float3 SampleSH9(float4 SHCoefficients[7], float3 N)
     // Quadratic polynomials
     res += SHEvalLinearL2(N, shBr, shBg, shBb, shCr);
 
-    #ifdef UNITY_COLORSPACE_GAMMA
+#ifdef UNITY_COLORSPACE_GAMMA
     res = LinearToSRGB(res);
-    #endif
+#endif
 
     return res;
 }
@@ -130,11 +130,9 @@ float3 SampleSH9(float4 SHCoefficients[7], float3 N)
 // TODO: The calcul of texcoord could be perform with a single matrix multicplication calcualted on C++ side that will fold probeVolumeMin and probeVolumeSizeInv into it and handle the identity case, no reasons to do it in C++ (ask Ionut about it)
 // It should also handle the camera relative path (if the render pipeline use it)
 // bakeDiffuseLighting and backBakeDiffuseLighting must be initialize outside the function
-void SampleProbeVolumeSH4(
-    TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float3 backNormalWS,
-    float4x4 WorldToTexture,
-    float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv,
-    inout float3 bakeDiffuseLighting, inout float3 backBakeDiffuseLighting)
+void SampleProbeVolumeSH4(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float3 backNormalWS, float4x4 WorldToTexture,
+                            float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv,
+                            inout float3 bakeDiffuseLighting, inout float3 backBakeDiffuseLighting)
 {
     float3 position = (transformToLocal == 1.0) ? mul(WorldToTexture, float4(positionWS, 1.0)).xyz : positionWS;
     float3 texCoord = (position - probeVolumeMin) * probeVolumeSizeInv.xyz;
@@ -156,17 +154,15 @@ void SampleProbeVolumeSH4(
 }
 
 // Just a shortcut that call function above
-float3 SampleProbeVolumeSH4(
-    TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float4x4 WorldToTexture,
-    float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
+float3 SampleProbeVolumeSH4(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float4x4 WorldToTexture,
+                                float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
 {
     float3 backNormalWSUnused = 0.0;
     float3 bakeDiffuseLighting = 0.0;
     float3 backBakeDiffuseLightingUnused = 0.0;
-    SampleProbeVolumeSH4(TEXTURE3D_ARGS(SHVolumeTexture, SHVolumeSampler), positionWS, normalWS, backNormalWSUnused,
-                         WorldToTexture,
-                         transformToLocal, texelSizeX, probeVolumeMin, probeVolumeSizeInv,
-                         bakeDiffuseLighting, backBakeDiffuseLightingUnused);
+    SampleProbeVolumeSH4(TEXTURE3D_ARGS(SHVolumeTexture, SHVolumeSampler), positionWS, normalWS, backNormalWSUnused, WorldToTexture,
+                            transformToLocal, texelSizeX, probeVolumeMin, probeVolumeSizeInv,
+                            bakeDiffuseLighting, backBakeDiffuseLightingUnused);
     return bakeDiffuseLighting;
 }
 
@@ -174,11 +170,9 @@ float3 SampleProbeVolumeSH4(
 // The packing from 9 to 7 is done from engine code and will use the alpha component of the pixel to store an additional SH coefficient.
 // The 3D atlas texture will contain 7 SH coefficient parts.
 // bakeDiffuseLighting and backBakeDiffuseLighting must be initialize outside the function
-void SampleProbeVolumeSH9(
-    TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float3 backNormalWS,
-    float4x4 WorldToTexture,
-    float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv,
-    inout float3 bakeDiffuseLighting, inout float3 backBakeDiffuseLighting)
+void SampleProbeVolumeSH9(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float3 backNormalWS, float4x4 WorldToTexture,
+                                           float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv,
+                                           inout float3 bakeDiffuseLighting, inout float3 backBakeDiffuseLighting)
 {
     float3 position = (transformToLocal == 1.0f) ? mul(WorldToTexture, float4(positionWS, 1.0)).xyz : positionWS;
     float3 texCoord = (position - probeVolumeMin) * probeVolumeSizeInv;
@@ -205,25 +199,22 @@ void SampleProbeVolumeSH9(
 }
 
 // Just a shortcut that call function above
-float3 SampleProbeVolumeSH9(
-    TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float4x4 WorldToTexture,
-    float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
+float3 SampleProbeVolumeSH9(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float4x4 WorldToTexture,
+                                float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
 {
     float3 backNormalWSUnused = 0.0;
     float3 bakeDiffuseLighting = 0.0;
     float3 backBakeDiffuseLightingUnused = 0.0;
-    SampleProbeVolumeSH9(TEXTURE3D_ARGS(SHVolumeTexture, SHVolumeSampler), positionWS, normalWS, backNormalWSUnused,
-                         WorldToTexture,
-                         transformToLocal, texelSizeX, probeVolumeMin, probeVolumeSizeInv,
-                         bakeDiffuseLighting, backBakeDiffuseLightingUnused);
+    SampleProbeVolumeSH9(TEXTURE3D_ARGS(SHVolumeTexture, SHVolumeSampler), positionWS, normalWS, backNormalWSUnused, WorldToTexture,
+                            transformToLocal, texelSizeX, probeVolumeMin, probeVolumeSizeInv,
+                            bakeDiffuseLighting, backBakeDiffuseLightingUnused);
     return bakeDiffuseLighting;
 }
 
 #endif
 
-float4 SampleProbeOcclusion(
-    TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float4x4 WorldToTexture,
-    float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
+float4 SampleProbeOcclusion(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float4x4 WorldToTexture,
+                            float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
 {
     float3 position = (transformToLocal == 1.0) ? mul(WorldToTexture, float4(positionWS, 1.0)).xyz : positionWS;
     float3 texCoord = (position - probeVolumeMin) * probeVolumeSizeInv.xyz;
@@ -256,7 +247,7 @@ real4 PackEmissiveRGBM(real3 rgb)
     const real kMinMultiplier = 2.0 * 1e-2;
 
     real4 rgbm = real4(rgb * kOneOverRGBMMaxRange, 1.0);
-    rgbm.a = max(max(rgbm.r, rgbm.g), max(rgbm.b, kMinMultiplier));
+        rgbm.a = max(max(rgbm.r, rgbm.g), max(rgbm.b, kMinMultiplier));
     rgbm.a = ceil(rgbm.a * 255.0) / 255.0;
 
     // Division-by-zero warning from d3d9, so make compiler happy.
@@ -268,11 +259,11 @@ real4 PackEmissiveRGBM(real3 rgb)
 
 real3 UnpackLightmapRGBM(real4 rgbmInput, real4 decodeInstructions)
 {
-    #ifdef UNITY_COLORSPACE_GAMMA
+#ifdef UNITY_COLORSPACE_GAMMA
     return rgbmInput.rgb * (rgbmInput.a * decodeInstructions.x);
-    #else
+#else
     return rgbmInput.rgb * (PositivePow(rgbmInput.a, decodeInstructions.y) * decodeInstructions.x);
-    #endif
+#endif
 }
 
 real3 UnpackLightmapDoubleLDR(real4 encodedColor, real4 decodeInstructions)
@@ -283,13 +274,13 @@ real3 UnpackLightmapDoubleLDR(real4 encodedColor, real4 decodeInstructions)
 #ifndef BUILTIN_TARGET_API
 real3 DecodeLightmap(real4 encodedIlluminance, real4 decodeInstructions)
 {
-    #if defined(UNITY_LIGHTMAP_RGBM_ENCODING)
+#if defined(UNITY_LIGHTMAP_RGBM_ENCODING)
     return UnpackLightmapRGBM(encodedIlluminance, decodeInstructions);
-    #elif defined(UNITY_LIGHTMAP_DLDR_ENCODING)
+#elif defined(UNITY_LIGHTMAP_DLDR_ENCODING)
     return UnpackLightmapDoubleLDR(encodedIlluminance, decodeInstructions);
-    #else // (UNITY_LIGHTMAP_FULL_HDR)
+#else // (UNITY_LIGHTMAP_FULL_HDR)
     return encodedIlluminance.rgb;
-    #endif
+#endif
 }
 #endif
 
@@ -316,9 +307,7 @@ real3 DecodeHDREnvironment(real4 encodedIrradiance, real4 decodeInstructions)
 #define LIGHTMAP_EXTRA_ARGS_USE uv
 #endif
 
-real3 SampleSingleLightmap(
-    TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler), LIGHTMAP_EXTRA_ARGS, float4 transform, bool encodedLightmap,
-    real4 decodeInstructions)
+real3 SampleSingleLightmap(TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler), LIGHTMAP_EXTRA_ARGS, float4 transform, bool encodedLightmap, real4 decodeInstructions)
 {
     // transform is scale and bias
     uv = uv * transform.xy + transform.zw;
@@ -326,8 +315,7 @@ real3 SampleSingleLightmap(
     // Remark: baked lightmap is RGBM for now, dynamic lightmap is RGB9E5
     if (encodedLightmap)
     {
-        real4 encodedIlluminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).
-            rgba;
+        real4 encodedIlluminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).rgba;
         illuminance = DecodeLightmap(encodedIlluminance, decodeInstructions);
     }
     else
@@ -337,13 +325,10 @@ real3 SampleSingleLightmap(
     return illuminance;
 }
 
-void SampleDirectionalLightmap(
-    TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler),
-    TEXTURE2D_LIGHTMAP_PARAM(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS, float4 transform,
-    float3 normalWS, float3 backNormalWS, bool encodedLightmap, real4 decodeInstructions,
-    inout real3 bakeDiffuseLighting, inout real3 backBakeDiffuseLighting)
+void SampleDirectionalLightmap(TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler), TEXTURE2D_LIGHTMAP_PARAM(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS, float4 transform,
+    float3 normalWS, float3 backNormalWS, bool encodedLightmap, real4 decodeInstructions, inout real3 bakeDiffuseLighting, inout real3 backBakeDiffuseLighting)
 {
-    // In directional mode Enlighten bakes dominant light direction
+     // In directional mode Enlighten bakes dominant light direction
     // in a way, that using it for half Lambert and then dividing by a "rebalancing coefficient"
     // gives a result close to plain diffuse response lightmaps, but normalmapped.
 
@@ -358,106 +343,33 @@ void SampleDirectionalLightmap(
     real3 illuminance = real3(0.0, 0.0, 0.0);
     if (encodedLightmap)
     {
-        real4 encodedIlluminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).
-            rgba;
+        real4 encodedIlluminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).rgba;
         illuminance = DecodeLightmap(encodedIlluminance, decodeInstructions);
     }
     else
     {
         illuminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).rgb;
     }
-    half3 dir = normalize(direction.xyz * 2 - 1);
-    real halfLambert =  dot(normalWS, dir.xyz) *0.5 +0.5;
-    bakeDiffuseLighting += illuminance * halfLambert;
 
-    // real halfLambert = dot(normalWS, direction.xyz - 0.5) + 0.5;
-    // bakeDiffuseLighting += illuminance * halfLambert / max(1e-4, direction.w);
-    //
-    // real backHalfLambert = dot(backNormalWS, direction.xyz - 0.5) + 0.5;
-    // backBakeDiffuseLighting += illuminance * backHalfLambert / max(1e-4, direction.w);
+    real halfLambert = dot(normalWS, direction.xyz - 0.5) + 0.5;
+    bakeDiffuseLighting += illuminance * halfLambert / max(1e-4, direction.w);
+
+    real backHalfLambert = dot(backNormalWS, direction.xyz - 0.5) + 0.5;
+    backBakeDiffuseLighting += illuminance * backHalfLambert / max(1e-4, direction.w);
 }
 
 // Just a shortcut that call function above
-real3 SampleDirectionalLightmap(
-    TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler),
-    TEXTURE2D_LIGHTMAP_PARAM(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS, float4 transform,
+real3 SampleDirectionalLightmap(TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler), TEXTURE2D_LIGHTMAP_PARAM(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS, float4 transform,
     float3 normalWS, bool encodedLightmap, real4 decodeInstructions)
 {
     float3 backNormalWSUnused = 0.0;
     real3 bakeDiffuseLighting = 0.0;
     real3 backBakeDiffuseLightingUnused = 0.0;
-    SampleDirectionalLightmap(
-        TEXTURE2D_LIGHTMAP_ARGS(lightmapTex, lightmapSampler),
-        TEXTURE2D_LIGHTMAP_ARGS(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS_USE, transform,
-        normalWS, backNormalWSUnused, encodedLightmap, decodeInstructions, bakeDiffuseLighting,
-        backBakeDiffuseLightingUnused);
+    SampleDirectionalLightmap(TEXTURE2D_LIGHTMAP_ARGS(lightmapTex, lightmapSampler), TEXTURE2D_LIGHTMAP_ARGS(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS_USE, transform,
+                                normalWS, backNormalWSUnused, encodedLightmap, decodeInstructions, bakeDiffuseLighting, backBakeDiffuseLightingUnused);
 
     return bakeDiffuseLighting;
 }
-
-//自定义
-void SampleDirectionalLightmap_Test(
-    TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler),
-    TEXTURE2D_LIGHTMAP_PARAM(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS, float4 transform,
-    float3 normalWS, float3 backNormalWS, bool encodedLightmap, real4 decodeInstructions,
-    inout real3 bakeDiffuseLighting, inout real3 backBakeDiffuseLighting,half3 viewDir)
-{
-    // In directional mode Enlighten bakes dominant light direction
-    // in a way, that using it for half Lambert and then dividing by a "rebalancing coefficient"
-    // gives a result close to plain diffuse response lightmaps, but normalmapped.
-
-    // Note that dir is not unit length on purpose. Its length is "directionality", like
-    // for the directional specular lightmaps.
-
-    // transform is scale and bias
-    uv = uv * transform.xy + transform.zw;
-
-    real4 direction = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapDirTex, lightmapDirSampler, LIGHTMAP_EXTRA_ARGS_USE);
-    // Remark: baked lightmap is RGBM for now, dynamic lightmap is RGB9E5
-    real3 illuminance = real3(0.0, 0.0, 0.0);
-    if (encodedLightmap)
-    {
-        real4 encodedIlluminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).
-            rgba;
-        illuminance = DecodeLightmap(encodedIlluminance, decodeInstructions);
-    }
-    else
-    {
-        illuminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).rgb;
-    }
-    half3 dir = normalize(direction.xyz * 2 - 1);
-
-    //diffuse
-    real halfLambert =  dot(normalWS, dir.xyz) *0.5 +0.5;
-    bakeDiffuseLighting += illuminance * halfLambert;
-    //BLphone
-    bakeDiffuseLighting += pow(max(0.01,dot(normalize(viewDir + dir),normalWS)),50) * illuminance;
-
-    // real halfLambert = dot(normalWS, direction.xyz - 0.5) + 0.5;
-    // bakeDiffuseLighting += illuminance * halfLambert / max(1e-4, direction.w);
-    //
-    // real backHalfLambert = dot(backNormalWS, direction.xyz - 0.5) + 0.5;
-    // backBakeDiffuseLighting += illuminance * backHalfLambert / max(1e-4, direction.w);
-}
-
-// Just a shortcut that call function above
-real3 SampleDirectionalLightmap_Test(
-    TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler),
-    TEXTURE2D_LIGHTMAP_PARAM(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS, float4 transform,
-    float3 normalWS, bool encodedLightmap, real4 decodeInstructions,half3 viewDir)
-{
-    float3 backNormalWSUnused = 0.0;
-    real3 bakeDiffuseLighting = 0.0;
-    real3 backBakeDiffuseLightingUnused = 0.0;
-    SampleDirectionalLightmap_Test(
-        TEXTURE2D_LIGHTMAP_ARGS(lightmapTex, lightmapSampler),
-        TEXTURE2D_LIGHTMAP_ARGS(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS_USE, transform,
-        normalWS, backNormalWSUnused, encodedLightmap, decodeInstructions, bakeDiffuseLighting,
-        backBakeDiffuseLightingUnused,viewDir);
-
-    return bakeDiffuseLighting;
-}
-
 
 #if SHADER_API_MOBILE || SHADER_API_GLES || SHADER_API_GLES3
 #pragma warning (enable : 3205) // conversion of larger type to smaller

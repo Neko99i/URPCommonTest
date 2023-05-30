@@ -143,7 +143,6 @@ namespace UnityEngine.Rendering.Universal
 
         public UniversalRenderPipeline(UniversalRenderPipelineAsset asset)
         {
-            
 #if UNITY_EDITOR
             m_GlobalSettings = UniversalRenderPipelineGlobalSettings.Ensure();
 #else
@@ -255,7 +254,6 @@ namespace UnityEngine.Rendering.Universal
 
             SortCameras(cameras);
 #if UNITY_2021_1_OR_NEWER
-            //开始渲染每个相机
             for (int i = 0; i < cameras.Count; ++i)
 #else
             for (int i = 0; i < cameras.Length; ++i)
@@ -541,11 +539,11 @@ namespace UnityEngine.Rendering.Universal
             {
                 BeginCameraRendering(context, baseCamera);
             }
-            
             // Update volumeframework before initializing additional camera data
             UpdateVolumeFramework(baseCamera, baseCameraAdditionalData);
             InitializeCameraData(baseCamera, baseCameraAdditionalData, !isStackedRendering, out var baseCameraData);
             RenderTextureDescriptor originalTargetDesc = baseCameraData.cameraTargetDescriptor;
+
 #if ENABLE_VR && ENABLE_XR_MODULE
             if (xrPass.enabled)
             {
@@ -581,8 +579,7 @@ namespace UnityEngine.Rendering.Universal
             m_XRSystem.EndLateLatching(baseCamera, xrPass);
 #endif
 
-             //开始渲染StackCamera   
-                if (isStackedRendering)
+            if (isStackedRendering)
             {
                 for (int i = 0; i < cameraStack.Count; ++i)
                 {
@@ -596,7 +593,6 @@ namespace UnityEngine.Rendering.Universal
                     {
                         // Copy base settings from base camera data and initialize initialize remaining specific settings for this camera type.
                         CameraData overlayCameraData = baseCameraData;
-                        // overlayCameraData.renderScale=1;
                         bool lastCamera = i == lastActiveOverlayCameraIndex;
 
 #if ENABLE_VR && ENABLE_XR_MODULE
@@ -612,17 +608,11 @@ namespace UnityEngine.Rendering.Universal
                         VFX.VFXManager.PrepareCamera(currCamera);
 #endif
                         UpdateVolumeFramework(currCamera, currCameraData);
-
                         InitializeAdditionalCameraData(currCamera, currCameraData, lastCamera, ref overlayCameraData);
-                        
-                        // overlayCameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(overlayCameraData.camera, overlayCameraData.renderScale,
-                        //     overlayCameraData.isHdrEnabled, 1, false, overlayCameraData.requiresOpaqueTexture);
-                        
 #if ENABLE_VR && ENABLE_XR_MODULE
                         if (baseCameraData.xr.enabled)
                             m_XRSystem.UpdateFromCamera(ref overlayCameraData.xr, overlayCameraData);
 #endif
-                        
                         RenderSingleCamera(context, overlayCameraData, anyPostProcessingEnabled);
 
                         using (new ProfilingScope(null, Profiling.Pipeline.endCameraRendering))
@@ -739,8 +729,6 @@ namespace UnityEngine.Rendering.Universal
 #endif
         }
 
-        #region 初始化数据
-
         static void InitializeCameraData(Camera camera, UniversalAdditionalCameraData additionalCameraData, bool resolveFinalTarget, out CameraData cameraData)
         {
             using var profScope = new ProfilingScope(null, Profiling.Pipeline.initializeCameraData);
@@ -770,9 +758,7 @@ namespace UnityEngine.Rendering.Universal
             cameraData.cameraTargetDescriptor = CreateRenderTextureDescriptor(camera, cameraData.renderScale,
                 cameraData.isHdrEnabled, msaaSamples, needsAlphaChannel, cameraData.requiresOpaqueTexture);
         }
-        
-        //相机数据被拆分为了两块 BaseCameraData = 基础数据 + AddData
-        //初始化BaseCamera的Data
+
         /// <summary>
         /// Initialize camera data settings common for all cameras in the stack. Overlay cameras will inherit
         /// settings from base camera.
@@ -784,11 +770,6 @@ namespace UnityEngine.Rendering.Universal
         {
             using var profScope = new ProfilingScope(null, Profiling.Pipeline.initializeStackedCameraData);
 
-            if (baseCamera.allowMSAA && baseCamera.targetTexture!=null)
-            {
-                int msaaSamples = baseCamera.targetTexture.antiAliasing;
-            }
-            
             var settings = asset;
             cameraData.targetTexture = baseCamera.targetTexture;
             cameraData.cameraType = baseCamera.cameraType;
@@ -846,12 +827,13 @@ namespace UnityEngine.Rendering.Universal
             cameraData.pixelHeight = baseCamera.pixelHeight;
             cameraData.aspectRatio = (float)cameraData.pixelWidth / (float)cameraData.pixelHeight;
             cameraData.isDefaultViewport = (!(Math.Abs(cameraRect.x) > 0.0f || Math.Abs(cameraRect.y) > 0.0f ||
-                                              Math.Abs(cameraRect.width) < 1.0f || Math.Abs(cameraRect.height) < 1.0f));
+                Math.Abs(cameraRect.width) < 1.0f || Math.Abs(cameraRect.height) < 1.0f));
 
             // Discard variations lesser than kRenderScaleThreshold.
             // Scale is only enabled for gameview.
             const float kRenderScaleThreshold = 0.05f;
             cameraData.renderScale = (Mathf.Abs(1.0f - settings.renderScale) < kRenderScaleThreshold) ? 1.0f : settings.renderScale;
+
             // Convert the upscaling filter selection from the pipeline asset into an image upscaling filter
             cameraData.upscalingFilter = ResolveUpscalingFilterSelection(new Vector2(cameraData.pixelWidth, cameraData.pixelHeight), cameraData.renderScale, settings.upscalingFilter);
 
@@ -890,7 +872,6 @@ namespace UnityEngine.Rendering.Universal
             cameraData.captureActions = CameraCaptureBridge.GetCaptureActions(baseCamera);
         }
 
-        //初始化其他Camera的Data
         /// <summary>
         /// Initialize settings that can be different for each camera in the stack.
         /// </summary>
@@ -998,7 +979,7 @@ namespace UnityEngine.Rendering.Universal
             if (cameraData.maxShadowDistance > 0.0f)
             {
                 mainLightCastShadows = (mainLightIndex != -1 && visibleLights[mainLightIndex].light != null &&
-                                        visibleLights[mainLightIndex].light.shadows != LightShadows.None);
+                    visibleLights[mainLightIndex].light.shadows != LightShadows.None);
 
                 // If additional lights are shaded per-pixel they cannot cast shadows
                 if (settings.additionalLightsRenderingMode == LightRenderingMode.PerPixel)
@@ -1127,7 +1108,7 @@ namespace UnityEngine.Rendering.Universal
         {
             using var profScope = new ProfilingScope(null, Profiling.Pipeline.initializeLightData);
 
-            int maxPerObjectAdditionalLights = maxPerObjectLights;
+            int maxPerObjectAdditionalLights = UniversalRenderPipeline.maxPerObjectLights;
             int maxVisibleAdditionalLights = UniversalRenderPipeline.maxVisibleAdditionalLights;
 
             lightData.mainLightIndex = mainLightIndex;
@@ -1185,8 +1166,6 @@ namespace UnityEngine.Rendering.Universal
             }
 #endif
         }
-
-        #endregion
 
         static PerObjectData GetPerObjectLightFlags(int additionalLightsCount)
         {
@@ -1323,10 +1302,9 @@ namespace UnityEngine.Rendering.Universal
                     // The user selected "auto" for their upscaling filter so we should attempt to choose the best filter
                     // for the current situation. When the current resolution and render scale are compatible with integer
                     // scaling we use the point sampling filter. Otherwise we just use the default filter (linear).
-                    // float pixelScale = (1.0f / renderScale);
-                    float pixelScale = (1.0f / 0.001f);
+                    float pixelScale = (1.0f / renderScale);
                     bool isIntegerScale = Mathf.Approximately((pixelScale - Mathf.Floor(pixelScale)), 0.0f);
-                    
+
                     if (isIntegerScale)
                     {
                         float widthScale = (imageSize.x / pixelScale);
@@ -1339,9 +1317,8 @@ namespace UnityEngine.Rendering.Universal
                         {
                             filter = ImageUpscalingFilter.Point;
                         }
-                        
                     }
-                    filter = ImageUpscalingFilter.Point;
+
                     break;
                 }
 

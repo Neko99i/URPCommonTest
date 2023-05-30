@@ -1291,21 +1291,5 @@ namespace UnityEngine.Rendering.Universal
             if (index == -1) index = m_DefaultRendererIndex;
             return index < m_RendererDataList.Length ? m_RendererDataList[index] != null : false;
         }
-        
-        //用于外部动态访问render feature
-        public ScriptableRendererFeature FindRenderFeature(string rendererFeatureName)
-        {
-            foreach (var rendererData in m_RendererDataList)
-            {
-                foreach (var rendererFeature in  rendererData.rendererFeatures)
-                {
-                    if (rendererFeature.name.Equals(rendererFeatureName))
-                    {
-                        return rendererFeature;
-                    }
-                }
-            }
-            return null;
-        }
     }
 }

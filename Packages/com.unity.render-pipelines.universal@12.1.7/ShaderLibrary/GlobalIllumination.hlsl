@@ -125,44 +125,6 @@ half3 SampleLightmap(float2 staticLightmapUV, float2 dynamicLightmapUV, half3 no
     return diffuseLighting;
 }
 
-// Sample baked and/or realtime lightmap. Non-Direction and Directional if available.
-half3 SampleLightmap_Test(float2 staticLightmapUV, float2 dynamicLightmapUV, half3 normalWS,half3 viewDir)
-{
-    #ifdef UNITY_LIGHTMAP_FULL_HDR
-    bool encodedLightmap = false;
-    #else
-    bool encodedLightmap = true;
-    #endif
-
-    half4 decodeInstructions = half4(LIGHTMAP_HDR_MULTIPLIER, LIGHTMAP_HDR_EXPONENT, 0.0h, 0.0h);
-
-    // The shader library sample lightmap functions transform the lightmap uv coords to apply bias and scale.
-    // However, universal pipeline already transformed those coords in vertex. We pass half4(1, 1, 0, 0) and
-    // the compiler will optimize the transform away.
-    half4 transformCoords = half4(1, 1, 0, 0);
-
-    float3 diffuseLighting = 0;
-
-    #if defined(LIGHTMAP_ON) && defined(DIRLIGHTMAP_COMBINED)
-    diffuseLighting = SampleDirectionalLightmap_Test(TEXTURE2D_LIGHTMAP_ARGS(LIGHTMAP_NAME, LIGHTMAP_SAMPLER_NAME),
-        TEXTURE2D_LIGHTMAP_ARGS(LIGHTMAP_INDIRECTION_NAME, LIGHTMAP_SAMPLER_NAME),
-        LIGHTMAP_SAMPLE_EXTRA_ARGS, transformCoords, normalWS, encodedLightmap, decodeInstructions,viewDir);
-    #elif defined(LIGHTMAP_ON)
-    diffuseLighting = SampleSingleLightmap(TEXTURE2D_LIGHTMAP_ARGS(LIGHTMAP_NAME, LIGHTMAP_SAMPLER_NAME), LIGHTMAP_SAMPLE_EXTRA_ARGS, transformCoords, encodedLightmap, decodeInstructions);
-    #endif
-
-    #if defined(DYNAMICLIGHTMAP_ON) && defined(DIRLIGHTMAP_COMBINED)
-    diffuseLighting += SampleDirectionalLightmap(TEXTURE2D_ARGS(unity_DynamicLightmap, samplerunity_DynamicLightmap),
-        TEXTURE2D_ARGS(unity_DynamicDirectionality, samplerunity_DynamicLightmap),
-        dynamicLightmapUV, transformCoords, normalWS, false, decodeInstructions);
-    #elif defined(DYNAMICLIGHTMAP_ON)
-    diffuseLighting += SampleSingleLightmap(TEXTURE2D_ARGS(unity_DynamicLightmap, samplerunity_DynamicLightmap),
-        dynamicLightmapUV, transformCoords, false, decodeInstructions);
-    #endif
-
-    return diffuseLighting;
-}
-
 // Legacy version of SampleLightmap where Realtime GI is not supported.
 half3 SampleLightmap(float2 staticLightmapUV, half3 normalWS)
 {
@@ -183,17 +145,6 @@ half3 SampleLightmap(float2 staticLightmapUV, half3 normalWS)
 #else
 #define SAMPLE_GI(staticLmName, shName, normalWSName) SampleSHPixel(shName, normalWSName)
 #endif
-
-#if defined(LIGHTMAP_ON) && defined(DYNAMICLIGHTMAP_ON)
-#define SAMPLE_GI_Test(staticLmName, dynamicLmName, shName, normalWSName) SampleLightmap_Test(staticLmName, dynamicLmName, normalWSName,0)
-#elif defined(DYNAMICLIGHTMAP_ON)
-#define SAMPLE_GI_Test(staticLmName, dynamicLmName, shName, normalWSName) SampleLightmap_Test(0, dynamicLmName, normalWSName,0)
-#elif defined(LIGHTMAP_ON)
-#define SAMPLE_GI_Test(staticLmName, shName, normalWSName,viewDir) SampleLightmap_Test(staticLmName, 0, normalWSName,viewDir)
-#else
-#define SAMPLE_GI_Test(staticLmName, shName, normalWSName,viewDir) SampleLightmap_Test(shName,0, normalWSName,viewDir)
-#endif
-
 
 half3 BoxProjectedCubemapDirection(half3 reflectionWS, float3 positionWS, float4 cubemapPositionWS, float4 boxMin, float4 boxMax)
 {

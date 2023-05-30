@@ -16,18 +16,18 @@ MonoBehaviour:
   m_Settings:
     evt: 50
     shadowMaterial: {fileID: 2100000, guid: 811ac0bdcf505e742a2a6ba223fb5a17, type: 2}
-    shadowType: 1
-    filterType: 0
-    blurSize: 0
-    kawaseFilterCount: 4
-    kawaseDownSampleScale: 2
-    dualFilterCount: 2
-    useHalfDepth: 0
-    esmConst: 80
-    vsmMin: 0.5
-    evsmConstX: 40
-    evsmConstY: 5
-    evsmMin: 0.1
+    shadowType: 0
+    filterType: 1
+    blurSize: 0.37
+    kawaseFilterCount: 1
+    kawaseDownSampleScale: 5.18
+    dualFilterCount: 1
+    useHalfDepth: 1
+    esmConst: 10.5
+    vsmMin: 0.592
+    evsmConstX: 0
+    evsmConstY: 0
+    evsmMin: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
