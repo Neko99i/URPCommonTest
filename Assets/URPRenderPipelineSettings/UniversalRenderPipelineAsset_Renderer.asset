@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81037f9299b2f344a904275d3532d634, type: 3}
   m_Name: CustomShadowFeature
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   m_Settings:
     evt: 50
     shadowMaterial: {fileID: 2100000, guid: 811ac0bdcf505e742a2a6ba223fb5a17, type: 2}

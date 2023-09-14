@@ -1,0 +1,180 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SK_Role_Player_Warrior_Moli_Lod01_Humanoid_Mask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: root
+    m_Weight: 1
+  - m_Path: root/Bip001
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 L Thigh
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 L Thigh/Bip001 L Calf
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 L Thigh/Bip001 L Calf/Bip001 L Foot
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 L Thigh/Bip001 L Calf/Bip001 L Foot/Bip001
+      L Toe0
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 L Thigh/Bip001 L Calf/Bip001 L Foot/dummy_left_foot
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 R Thigh
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 R Thigh/Bip001 R Calf
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 R Thigh/Bip001 R Calf/Bip001 R Foot
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 R Thigh/Bip001 R Calf/Bip001 R Foot/Bip001
+      R Toe0
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 R Thigh/Bip001 R Calf/Bip001 R Foot/dummy_right_foot
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger0
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger0/Bip001 L Finger01
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger1
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001 L Finger1/Bip001 L Finger11
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001_Weapon_l
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001_Weapon_l/Bone_Weapon_l
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001_Weapon_l/Bone_Weapon_l/Bone_weapon_l_dunpai01
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001_Weapon_l/Bone_Weapon_l/Bone_weapon_l_dunpai01/Bone_weapon_l_dunpai02
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001_Weapon_l/Bone_Weapon_l/Bone_weapon_l_dunpai01/Bone_weapon_l_dunpai02/Bone_weapon_l_dunpai03
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001_Weapon_l/Bone_Weapon_l/Bone_weapon_l_dunpai01/Bone_weapon_l_dunpai02/Bone_weapon_l_dunpai03/Bone_weapon_l_dunpai04
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/Bip001_Weapon_l/Bone_Weapon_l/dummy_weapon02
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 L Clavicle/Bip001
+      L UpperArm/Bip001 L Forearm/Bip001 L Hand/dummy_left_hand
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+      Head
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+      Head/Bone_hair01
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+      Head/Bone_hair01/Bone_hair02
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 Neck/Bip001
+      Head/dummy_head
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm/Bip001 R Hand
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger0
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger0/Bip001 R Finger01
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger1
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001 R Finger1/Bip001 R Finger11
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001_Weapon_r
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001_Weapon_r/Bone_Weapon_r
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001_Weapon_r/Bone_Weapon_r/dummy_weapon01
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm/Bip001 R Hand/Bip001_Weapon_r/Bone_Weapon_r/dummy_weapon_buff
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bip001 R Clavicle/Bip001
+      R UpperArm/Bip001 R Forearm/Bip001 R Hand/dummy_right_hand
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bone_pifeng_01
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bone_pifeng_01/Bone_pifeng_02
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bone_pifeng_01/Bone_pifeng_02/Bone_pifeng_03
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bone_pifeng_01/Bone_pifeng_02/Bone_pifeng_03/Bone_pifeng_04
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bone_pifeng_01/Bone_pifeng_02/Bone_pifeng_03/Bone_pifeng_04/Bone_pifeng_05
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bone_pifeng_01/Bone_pifeng_02/Bone_pifeng_03/Bone_pifeng_04/Bone_pifeng_05/Bone_pifeng_06
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/Bone_pifeng_01/Bone_pifeng_02/Bone_pifeng_03/Bone_pifeng_04/Bone_pifeng_05/Bone_pifeng_06/Bone_pifeng_07
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bip001 Spine1/dummy_body
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bip001 Spine/Bone_duanjian
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bone_piaodai_01
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bone_piaodai_02
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bone_piaodai_03
+    m_Weight: 1
+  - m_Path: root/Bip001/Bip001 Pelvis/Bone_piaodai_04
+    m_Weight: 1
+  - m_Path: root/Bip001/dummy_foot
+    m_Weight: 1
+  - m_Path: root/dummy_body_buff
+    m_Weight: 1
+  - m_Path: root/dummy_root
+    m_Weight: 1
+  - m_Path: SK_Role_Player_Warrior_Moli_Body_Lod01
+    m_Weight: 1
+  - m_Path: SK_Role_Player_Warrior_Moli_Weapon_Lod01
+    m_Weight: 1

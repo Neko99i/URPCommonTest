@@ -32,7 +32,6 @@ public class CustomRenderPipeline : RenderPipeline
             renderer.Render(context, camera,  useDynamicBatching,  useGPUInstancing);
         }
     }
-
 }
 
 public class CameraRender
@@ -236,7 +235,7 @@ public class CameraRender
     static ShaderTagId[] legacyShaderTagIds =
     {
             new ShaderTagId("Always"),
-            new ShaderTagId("ForwardBase"),
+            new ShaderTagId("UniversalForward"),
             new ShaderTagId("PrepassBase"),
             new ShaderTagId("Vertex"),
             new ShaderTagId("VertexLMRGBM"),
