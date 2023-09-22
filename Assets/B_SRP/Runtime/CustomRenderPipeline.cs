@@ -73,7 +73,6 @@ public class CameraRender
         this.context = context;
         this.camera = camera;
 
-
         //为了把相机的渲染分开，通过名字区分
         cmd.name = SampleName = camera.name;
 

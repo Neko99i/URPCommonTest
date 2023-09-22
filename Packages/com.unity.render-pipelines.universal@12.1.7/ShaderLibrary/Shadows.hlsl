@@ -129,6 +129,8 @@ float4 _ShadowBias; // x: depth bias, y: normal bias
 
 #define BEYOND_SHADOW_FAR(shadowCoord) shadowCoord.z <= 0.0 || shadowCoord.z >= 1.0
 
+#define BEYOND_SHADOW_UV(shadowCoord) shadowCoord.x <= 0.0 || shadowCoord.x >= 1.0 || shadowCoord.y <= 0.0 || shadowCoord.y >= 1.0
+
 struct ShadowSamplingData
 {
     half4 shadowOffset0;
@@ -265,7 +267,7 @@ real SampleShadowmap(TEXTURE2D_SHADOW_PARAM(ShadowMap, sampler_ShadowMap), float
 
     // Shadow coords that fall out of the light frustum volume must always return attenuation 1.0
     // TODO: We could use branch here to save some perf on some platforms.
-    return BEYOND_SHADOW_FAR(shadowCoord) ? 1.0 : attenuation;
+    return (BEYOND_SHADOW_FAR(shadowCoord) || BEYOND_SHADOW_UV(shadowCoord)) ? 1.0 : attenuation;
 }
 
 half ComputeCascadeIndex(float3 positionWS)

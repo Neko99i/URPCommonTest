@@ -82,7 +82,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             Light light = shadowLight.light;
             if (light.shadows == LightShadows.None)
                 return SetupForEmptyRendering(ref renderingData);
-
+            
             if (shadowLight.lightType != LightType.Directional)
             {
                 Debug.LogWarning("Only directional lights are supported as main light.");
@@ -100,13 +100,19 @@ namespace UnityEngine.Rendering.Universal.Internal
             renderTargetHeight = (m_ShadowCasterCascadesCount == 2) ?
                 renderingData.shadowData.mainLightShadowmapHeight >> 1 :
                 renderingData.shadowData.mainLightShadowmapHeight;
-
+            
+            
             for (int cascadeIndex = 0; cascadeIndex < m_ShadowCasterCascadesCount; ++cascadeIndex)
             {
-                bool success = ShadowUtils.ExtractDirectionalLightMatrix(ref renderingData.cullResults, ref renderingData.shadowData,
+                //TODO 管线修改：为了修改 LightShadow的 VP矩阵，增加Light参数
+                // bool success = ShadowUtils.ExtractDirectionalLightMatrix(light,ref renderingData.cullResults, ref renderingData.shadowData,
+                //     shadowLightIndex, cascadeIndex, renderTargetWidth, renderTargetHeight, shadowResolution, light.shadowNearPlane,
+                //     out m_CascadeSplitDistances[cascadeIndex], out m_CascadeSlices[cascadeIndex]);
+                
+                bool success = ShadowUtils.ExtractDirectionalLightMatrix(light,ref renderingData.cullResults, ref renderingData.shadowData,
                     shadowLightIndex, cascadeIndex, renderTargetWidth, renderTargetHeight, shadowResolution, light.shadowNearPlane,
                     out m_CascadeSplitDistances[cascadeIndex], out m_CascadeSlices[cascadeIndex]);
-
+                
                 if (!success)
                     return SetupForEmptyRendering(ref renderingData);
             }

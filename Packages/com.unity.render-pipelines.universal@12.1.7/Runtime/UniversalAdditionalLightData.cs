@@ -90,12 +90,12 @@ namespace UnityEngine.Rendering.Universal
 
         // The layer(s) this light belongs too.
         [SerializeField] LightLayerEnum m_LightLayerMask = LightLayerEnum.LightLayerDefault;
-
+        
         public LightLayerEnum lightLayerMask
-        {
-            get { return m_LightLayerMask; }
-            set { m_LightLayerMask = value; }
-        }
+             {
+                 get { return m_LightLayerMask; }
+                 set { m_LightLayerMask = value; }
+             } 
 
         [SerializeField] bool m_CustomShadowLayers = false;
 

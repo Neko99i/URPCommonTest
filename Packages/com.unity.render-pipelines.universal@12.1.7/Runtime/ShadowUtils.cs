@@ -64,6 +64,48 @@ namespace UnityEngine.Rendering.Universal
             return success;
         }
 
+        public static bool ExtractDirectionalLightMatrix(Light dirLight,ref CullingResults cullResults, ref ShadowData shadowData, int shadowLightIndex, int cascadeIndex, int shadowmapWidth, int shadowmapHeight, int shadowResolution, float shadowNearPlane, out Vector4 cascadeSplitDistance, out ShadowSliceData shadowSliceData)
+        {
+            bool success = cullResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(shadowLightIndex,
+                cascadeIndex, shadowData.mainLightShadowCascadesCount, shadowData.mainLightShadowCascadesSplit, shadowResolution, shadowNearPlane, out shadowSliceData.viewMatrix, out shadowSliceData.projectionMatrix,
+                out shadowSliceData.splitData);
+
+            cascadeSplitDistance = shadowSliceData.splitData.cullingSphere;
+            shadowSliceData.offsetX = (cascadeIndex % 2) * shadowResolution;
+            shadowSliceData.offsetY = (cascadeIndex / 2) * shadowResolution;
+            shadowSliceData.resolution = shadowResolution;
+            //
+            if (shadowData.mainLightShadowCascadesCount ==1 )
+            {
+                RoleShadowMatricData data;
+                if (dirLight.TryGetComponent<RoleShadowMatricData>(out data))
+                {
+                    shadowSliceData.viewMatrix = data.viewMatrix;
+                    shadowSliceData.projectionMatrix = data.projMatrix;
+                }
+                
+                // ShadowCameraData data;
+                // if (dirLight.TryGetComponent<ShadowCameraData>(out data))
+                // {
+                //     shadowSliceData.viewMatrix = data.viewMatrix;
+                //     shadowSliceData.projectionMatrix = data.projMatrix;
+                // }
+            }
+            
+            shadowSliceData.shadowTransform = GetShadowTransform(shadowSliceData.projectionMatrix, shadowSliceData.viewMatrix);
+
+            // It is the culling sphere radius multiplier for shadow cascade blending
+            // If this is less than 1.0, then it will begin to cull castors across cascades
+            shadowSliceData.splitData.shadowCascadeBlendCullingFactor = 1.0f;
+
+            // If we have shadow cascades baked into the atlas we bake cascade transform
+            // in each shadow matrix to save shader ALU and L/S
+            if (shadowData.mainLightShadowCascadesCount > 1)
+                ApplySliceTransform(ref shadowSliceData, shadowmapWidth, shadowmapHeight);
+
+            return success;
+        }
+        
         public static bool ExtractSpotLightMatrix(ref CullingResults cullResults, ref ShadowData shadowData, int shadowLightIndex, out Matrix4x4 shadowMatrix, out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix, out ShadowSplitData splitData)
         {
             bool success = cullResults.ComputeSpotShadowMatricesAndCullingPrimitives(shadowLightIndex, out viewMatrix, out projMatrix, out splitData); // returns false if input parameters are incorrect (rare)

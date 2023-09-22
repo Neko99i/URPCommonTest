@@ -1,33 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2640635967788177052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81037f9299b2f344a904275d3532d634, type: 3}
-  m_Name: CustomShadowFeature
-  m_EditorClassIdentifier: 
-  m_Active: 0
-  m_Settings:
-    evt: 50
-    shadowMaterial: {fileID: 2100000, guid: 811ac0bdcf505e742a2a6ba223fb5a17, type: 2}
-    shadowType: 0
-    filterType: 1
-    blurSize: 0.37
-    kawaseFilterCount: 1
-    kawaseDownSampleScale: 5.18
-    dualFilterCount: 1
-    useHalfDepth: 1
-    esmConst: 10.5
-    vsmMin: 0.592
-    evsmConstX: 0
-    evsmConstY: 0
-    evsmMin: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42,9 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
-  m_RendererFeatures:
-  - {fileID: -2640635967788177052}
-  m_RendererFeatureMap: 64a9ddf693935adb
+  m_RendererFeatures: []
+  m_RendererFeatureMap: 
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
