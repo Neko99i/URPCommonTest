@@ -50,9 +50,12 @@ namespace UnityEngine.Rendering.Universal
 
         private int boundsCount;
 
+        private Vector3 cameraCenterPos = Vector3.zero;
+        
         private Camera viewCamera = null;
 
         private List<Vector3> cornersList = new List<Vector3>();
+        
         private Bounds bounds = new Bounds();
 
         private List<SkinnedMeshRenderer> m_skinmeshes = new List<SkinnedMeshRenderer>();
@@ -88,7 +91,7 @@ namespace UnityEngine.Rendering.Universal
 
         private void OnEnable()
         {
-            CreateViewCamera();
+            // CreateViewCamera();
         }
 
         void Start()
@@ -107,18 +110,14 @@ namespace UnityEngine.Rendering.Universal
             viewCamera.clearFlags = CameraClearFlags.Color;
         }
 
-        private void UpdateCamera(List<Vector3> cornersList, float deltaX, float deltaY, float deltaZ, float aspect)
+        private void UpdateCamera(Vector3 cameraPos,float deltaX, float deltaY, float deltaZ, float aspect)
         {
-            Vector3 sumV = Vector3.zero;
-            for (int i = 0; i < cornersList.Count; i++)
-            {
-                sumV += cornersList[i];
-            }
-            Vector3 centerPos = sumV / cornersList.Count;
-
+            if (!viewCamera)
+                return;
+            
             viewCamera.transform.rotation = mainLight.transform.rotation;
             viewCamera.transform.forward = mainLight.transform.forward;
-            viewCamera.transform.position = centerPos - viewCamera.transform.forward * deltaZ / 2;
+            viewCamera.transform.position = cameraPos;
 
             viewCamera.nearClipPlane = 0;
             viewCamera.farClipPlane = deltaZ;
@@ -152,7 +151,8 @@ namespace UnityEngine.Rendering.Universal
 
         private void OnDisable()
         {
-            DestroyImmediate(viewCamera.gameObject);
+            if (viewCamera.gameObject)
+                DestroyImmediate(viewCamera.gameObject);
         }
 
         private void Update()
@@ -252,7 +252,16 @@ namespace UnityEngine.Rendering.Universal
             m_projMatrix.SetRow(3, row3);
 
             cornersList = GetCameraCornersWS(m_projMatrix, m_viewMatrix);
-            UpdateCamera(cornersList, xmax - xmin, (ymax - ymin), zmax - zmin, (xmax - xmin) / (ymax - ymin));
+            
+            Vector3 sumV = Vector3.zero;
+            for (int i = 0; i < cornersList.Count; i++)
+            {
+                sumV += cornersList[i];
+            }
+            Vector3 centerPos = sumV / cornersList.Count;
+            cameraCenterPos = centerPos - mainLight.transform.forward * (zmax - zmin) / 2;
+            
+            UpdateCamera(cameraCenterPos, xmax - xmin, (ymax - ymin), zmax - zmin, (xmax - xmin) / (ymax - ymin));
         }
 
         public bool IsContainLayer(GameObject go, LayerMask layers)
@@ -296,7 +305,7 @@ namespace UnityEngine.Rendering.Universal
                 }
             }
 
-            DrawCameraIcon(viewCamera.transform.position);
+            DrawCameraIcon(cameraCenterPos);
             
             recangle3D.point01 = cornersList[0];
             recangle3D.point02 = cornersList[1];
